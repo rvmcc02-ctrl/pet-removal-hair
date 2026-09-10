@@ -26,7 +26,8 @@ app.get("/", async (req, res, next) => {
           headers: {
             "content-length": "0",
             "X-FF-JS-TOKEN": process.env.FRAUDFILTER_HOSTED_JS_TOKEN,
-            "X-FF-REMOTE-ADDR": req.ip || "",
+            "X-FF-REMOTE-ADDR": (req.headers["x-forwarded-for"] || req.ip || "").split(",")[0].trim(),
+"X-FF-X-FORWARDED-FOR": req.headers["x-forwarded-for"] || "",
             "X-FF-REFERER": req.get("referer") || "",
             "X-FF-HOST": req.get("host") || "",
             "X-FF-QUERY-STRING": req.originalUrl.split("?")[1] || "",
