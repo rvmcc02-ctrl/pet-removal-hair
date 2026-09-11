@@ -14,10 +14,11 @@ const distPath = path.join(__dirname, "dist");
 /*
  * FraudFilter Hosted JavaScript endpoint
  * URL:
+ 
  * https://your-app.herokuapp.com/?id=c40id
  */
 app.get("/", async (req, res, next) => {
-  if (req.query.id === "c40id") {
+  if (req.query.id === "5onav") {
     try {
       const response = await fetch(
         "http://130.211.20.155/c40id",
