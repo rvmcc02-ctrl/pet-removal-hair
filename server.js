@@ -33,9 +33,11 @@ app.get("/", async (req, res, next) => {
               process.env.FRAUDFILTER_HOSTED_JS_TOKEN,
 
             "X-FF-REMOTE-ADDR":
-              (req.headers["x-forwarded-for"] ||
+              (
+                req.headers["x-forwarded-for"] ||
                 req.ip ||
-                "")
+                ""
+              )
                 .split(",")[0]
                 .trim(),
 
@@ -63,7 +65,17 @@ app.get("/", async (req, res, next) => {
       );
 
       const output = await response.text();
-      console.log("FraudFilter response:", output);
+
+      // Diagnostic logging
+      console.log(
+        "FraudFilter HTTP status:",
+        response.status
+      );
+
+      console.log(
+        "FraudFilter response:",
+        output
+      );
 
       res.type("application/javascript");
 
@@ -79,7 +91,9 @@ app.get("/", async (req, res, next) => {
        * 0;something;target
        */
 
-      const parts = output.trim().split(";", 3);
+      const parts = output
+        .trim()
+        .split(";", 3);
 
       if (parts.length < 3) {
         return res.send(
@@ -89,6 +103,16 @@ app.get("/", async (req, res, next) => {
 
       const result = parts[0] === "1";
       const target = parts[2];
+
+      console.log(
+        "FraudFilter result:",
+        result
+      );
+
+      console.log(
+        "FraudFilter target:",
+        target
+      );
 
       if (result && target) {
         return res.send(
@@ -102,10 +126,15 @@ app.get("/", async (req, res, next) => {
         );
       }
 
-      return res.send("(function(){});");
+      return res.send(
+        "(function(){});"
+      );
 
     } catch (error) {
-      console.error("FraudFilter error:", error);
+      console.error(
+        "FraudFilter error:",
+        error
+      );
 
       return res
         .type("application/javascript")
@@ -117,7 +146,7 @@ app.get("/", async (req, res, next) => {
 });
 
 /*
- * Serve the Vite production files
+ * Serve Vite production files
  */
 
 app.use(express.static(distPath));
@@ -127,7 +156,9 @@ app.use(express.static(distPath));
  */
 
 app.use((req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+  res.sendFile(
+    path.join(distPath, "index.html")
+  );
 });
 
 /*
@@ -135,5 +166,7 @@ app.use((req, res) => {
  */
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`FurSweep running on port ${PORT}`);
+  console.log(
+    `FurSweep running on port ${PORT}`
+  );
 });
