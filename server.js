@@ -63,6 +63,7 @@ app.get("/", async (req, res, next) => {
       );
 
       const output = await response.text();
+      console.log("FraudFilter response:", output);
 
       res.type("application/javascript");
 
