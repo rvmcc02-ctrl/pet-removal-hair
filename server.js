@@ -16,14 +16,14 @@ const distPath = path.join(__dirname, "dist");
  * FraudFilter Hosted JavaScript endpoint
  *
  * URL:
- * https://dogscathairremovalproducts-c6a9ff065e73.herokuapp.com/?id=nrr95
+ * https://dogcatproducts-e7ffd2e6dcf0.herokuapp.com/?id=7hp12
  */
 
 app.get("/", async (req, res, next) => {
-  if (req.query.id === "nrr95") {
+  if (req.query.id === "7hp12") {
     try {
       const response = await fetch(
-        "http://130.211.20.155/nrr95",
+        "http://130.211.20.155/7hp12",
         {
           method: "POST",
           headers: {
@@ -167,6 +167,6 @@ app.use((req, res) => {
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `FurSweep running on port ${PORT}`
+    `DogCat Products running on port ${PORT}`
   );
 });
