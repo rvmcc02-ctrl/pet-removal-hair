@@ -16,31 +16,49 @@ const distPath = path.join(__dirname, "dist");
  * FraudFilter Hosted JavaScript endpoint
  *
  * URL:
- * https://dogcatproducts-e7ffd2e6dcf0.herokuapp.com/?id=rprav
+ * https://dogcatproducts-e7ffd2e6dcf0.herokuapp.com/?id=h296e
  */
 
 app.get("/", async (req, res, next) => {
-  if (req.query.id === "rprav") {
+  if (req.query.id === "h296e") {
     try {
       const response = await fetch(
-        "http://130.211.20.155/rprav",
+        "http://130.211.20.155/h296e",
         {
           method: "POST",
           headers: {
             "content-length": "0",
-            "X-FF-JS-TOKEN": process.env.FRAUDFILTER_HOSTED_JS_TOKEN,
+
+            "X-FF-JS-TOKEN":
+              process.env.FRAUDFILTER_HOSTED_JS_TOKEN,
+
             "X-FF-REMOTE-ADDR":
-              (req.headers["x-forwarded-for"] || req.ip || "")
+              (
+                req.headers["x-forwarded-for"] ||
+                req.ip ||
+                ""
+              )
                 .split(",")[0]
                 .trim(),
+
             "X-FF-X-FORWARDED-FOR":
               req.headers["x-forwarded-for"] || "",
-            "X-FF-REFERER": req.get("referer") || "",
-            "X-FF-HOST": req.get("host") || "",
+
+            "X-FF-REFERER":
+              req.get("referer") || "",
+
+            "X-FF-HOST":
+              req.get("host") || "",
+
             "X-FF-QUERY-STRING":
               req.originalUrl.split("?")[1] || "",
-            "X-FF-REQUEST-URI": req.originalUrl,
-            "User-Agent": req.get("user-agent") || "",
+
+            "X-FF-REQUEST-URI":
+              req.originalUrl,
+
+            "User-Agent":
+              req.get("user-agent") || "",
+
             "Expected": ""
           }
         }
@@ -48,13 +66,33 @@ app.get("/", async (req, res, next) => {
 
       const output = await response.text();
 
+      console.log(
+        "FraudFilter HTTP status:",
+        response.status
+      );
+
+      console.log(
+        "FraudFilter response:",
+        output
+      );
+
       res.type("application/javascript");
+
       res.set(
         "Cache-Control",
         "no-store, no-cache, must-revalidate, max-age=0"
       );
 
-      const parts = output.trim().split(";", 3);
+      /*
+       * FraudFilter response format:
+       *
+       * 1;something;target
+       * 0;something;target
+       */
+
+      const parts = output
+        .trim()
+        .split(";", 3);
 
       if (parts.length < 3) {
         return res.send("(function(){});");
@@ -62,6 +100,16 @@ app.get("/", async (req, res, next) => {
 
       const result = parts[0] === "1";
       const target = parts[2];
+
+      console.log(
+        "FraudFilter result:",
+        result
+      );
+
+      console.log(
+        "FraudFilter target:",
+        target
+      );
 
       if (result && target) {
         return res.send(
@@ -78,7 +126,10 @@ app.get("/", async (req, res, next) => {
       return res.send("(function(){});");
 
     } catch (error) {
-      console.error("FraudFilter error:", error);
+      console.error(
+        "FraudFilter error:",
+        error
+      );
 
       return res
         .type("application/javascript")
@@ -89,12 +140,28 @@ app.get("/", async (req, res, next) => {
   next();
 });
 
+/*
+ * Serve Vite production files
+ */
+
 app.use(express.static(distPath));
 
+/*
+ * React fallback
+ */
+
 app.use((req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+  res.sendFile(
+    path.join(distPath, "index.html")
+  );
 });
 
+/*
+ * Start server
+ */
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`DogCat Products running on port ${PORT}`);
+  console.log(
+    `DogCat Products running on port ${PORT}`
+  );
 });
